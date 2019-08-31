@@ -1,5 +1,7 @@
 package guice;
 
+import com.amazonaws.auth.ClasspathPropertiesFileCredentialsProvider;
+import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
@@ -23,8 +25,6 @@ public class LibraryModule extends AbstractModule {
             Properties properties = new Properties();
             properties.load(new FileReader("config.properties"));
             Names.bindProperties(binder(), properties);
-            System.setProperty("aws.accessKeyId", properties.getProperty("aws.accessKeyId"));
-            System.setProperty("aws.secretKey", properties.getProperty("aws.secretKey"));
         } catch (Exception e) {
             log.error("Couldn't slurp properties: {}", e);
         }
@@ -41,7 +41,9 @@ public class LibraryModule extends AbstractModule {
 
     @Provides
     @Singleton
-    AmazonDynamoDB getDynamoClient() {
+    AmazonDynamoDB getDynamoClient(@Named("dynamodb.endpoint") String endpoint,
+                                   @Named("dynamodb.region") String region) {
         return AmazonDynamoDBClientBuilder.defaultClient();
     }
+
 }
