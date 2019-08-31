@@ -8,15 +8,14 @@ import dynamodb.dom.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 public class LibraryManager {
 
     private static final Logger log = LoggerFactory.getLogger(LibraryManager.class);
-
-//    TODO: move this to a config file.
-    private final String dynamoDbEndpoint = "http://localhost:8000";
 
     private final DynamoDBMapper checkRecordMapper;
 
@@ -64,6 +63,22 @@ public class LibraryManager {
         return StatusResponse.builder()
                 .statusCode(StatusResponse.Code.SUCCESS)
                 .statusMessage("Successfully checked in")
+                .build();
+    }
+
+    public StatusResponse addBook(Book b) {
+        LibraryCard card = LibraryCard.builder()
+                .bookName(b.getName())
+                .encodedBookQrId(b.getId())
+                .availability(AvailabilityStatus.AVAILABLE)
+                .tags(b.getTags())
+                .checkoutHistory(Collections.emptyList())
+                .build();
+
+        checkRecordMapper.save(card);
+        return StatusResponse.builder()
+                .statusCode(StatusResponse.Code.SUCCESS)
+                .statusMessage(String.format("Created library card %s for book %s", card, b))
                 .build();
     }
 

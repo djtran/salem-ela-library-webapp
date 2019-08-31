@@ -5,12 +5,14 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 import dynamodb.LibraryInitializer;
+import dynamodb.LibraryManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,10 +42,20 @@ public class LibraryModule extends AbstractModule {
     }
 
     @Provides
+    LibraryManager getLibraryManager(DynamoDBMapper mapper) {
+        return new LibraryManager(mapper);
+    }
+
+    @Provides
     @Singleton
-    AmazonDynamoDB getDynamoClient(@Named("dynamodb.endpoint") String endpoint,
-                                   @Named("dynamodb.region") String region) {
+    AmazonDynamoDB getDynamoClient() {
         return AmazonDynamoDBClientBuilder.defaultClient();
+    }
+
+    @Provides
+    @Singleton
+    DynamoDBMapper getMapper(AmazonDynamoDB client) {
+        return new DynamoDBMapper(client);
     }
 
 }
