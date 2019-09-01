@@ -1,18 +1,20 @@
-package dynamodb;
+package com.djtran.library;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import dom.Book;
-import dom.StatusResponse;
-import dom.Student;
-import dynamodb.dom.*;
+import com.djtran.library.dom.Book;
+import com.djtran.library.dom.StatusResponse;
+import com.djtran.library.dom.Student;
+import com.djtran.library.dynamodb.dom.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Library CRUD.
+ */
 public class LibraryManager {
 
     private static final Logger log = LoggerFactory.getLogger(LibraryManager.class);
@@ -24,6 +26,7 @@ public class LibraryManager {
     }
 
     public StatusResponse checkoutBook(Student s, Book b) {
+        log.info("Checkout {} for {}", b, s);
         LibraryCard card = getLibraryCard(b);
         List<CheckoutRecord> checkoutHistory = card.getCheckoutHistory();
         // Check if already checked out
@@ -50,23 +53,35 @@ public class LibraryManager {
 
         return StatusResponse.builder()
                 .statusCode(StatusResponse.Code.SUCCESS)
-                .statusMessage("Successfully checked out")
+                .statusMessage("Successfully checked out " + b.toString() + " for " + s.toString())
                 .build();
     }
 
     public StatusResponse checkInBook(Book b) {
+        log.info("Check in {}", b);
+        //Pull Library Card
         LibraryCard card = getLibraryCard(b);
+
+        //Log check in time
         List<CheckoutRecord> history = card.getCheckoutHistory();
-        history.get(history.size() -1).setDateCheckedIn(new Date());
+        history.get(history.size() - 1).setDateCheckedIn(new Date());
         card.setCheckoutHistory(history);
+        log.info("Updated entry: {}", history.get(history.size() - 1));
+
+        //Refresh availability
+        card.setAvailability(AvailabilityStatus.AVAILABLE);
+
+        //save
         saveLibraryCard(card);
         return StatusResponse.builder()
                 .statusCode(StatusResponse.Code.SUCCESS)
-                .statusMessage("Successfully checked in")
+                .statusMessage("Successfully checked in " + b.toString())
                 .build();
     }
 
     public StatusResponse addBook(Book b) {
+        log.info("New Book: {}", b);
+
         LibraryCard card = LibraryCard.builder()
                 .bookName(b.getName())
                 .encodedBookQrId(b.getId())
@@ -80,10 +95,6 @@ public class LibraryManager {
                 .statusCode(StatusResponse.Code.SUCCESS)
                 .statusMessage(String.format("Created library card %s for book %s", card, b))
                 .build();
-    }
-
-    public AvailabilityStatus isBookAvailable(Book b) {
-        return getLibraryCard(b).getAvailability();
     }
 
     private LibraryCard getLibraryCard(Book b) {

@@ -1,4 +1,4 @@
-package dom;
+package com.djtran.library.dom;
 
 import lombok.Builder;
 import lombok.Data;

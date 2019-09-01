@@ -1,28 +1,29 @@
-package dynamodb;
+package com.djtran.library.dynamodb;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.model.*;
-import dom.StatusResponse;
+import com.djtran.library.dom.StatusResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Responsible for initializing table if no table already exists.
  */
-public class LibraryInitializer {
-    private static final Logger log = LoggerFactory.getLogger(LibraryInitializer.class);
+public class DynamoDbTableInitializer {
+    private static final Logger log = LoggerFactory.getLogger(DynamoDbTableInitializer.class);
 
     private final AmazonDynamoDB client;
     private final String tableName;
 
-    public LibraryInitializer(AmazonDynamoDB client,
-                              String tableName) {
+    public DynamoDbTableInitializer(AmazonDynamoDB client,
+                                    String tableName) {
 
         this.client = client;
         this.tableName = tableName;
     }
 
     public StatusResponse init() throws InterruptedException {
+        log.info("Initializing the DynamoDB Table '{}'", tableName);
         ListTablesResult tables = client.listTables();
         boolean tableExists = tables.getTableNames().stream()
                 .anyMatch(name -> name.equals(tableName));
@@ -62,7 +63,6 @@ public class LibraryInitializer {
                 System.exit(1);
             }
         }
-
         return StatusResponse.builder()
                 .statusCode(StatusResponse.Code.SUCCESS)
                 .statusMessage("Initialized table successfully")

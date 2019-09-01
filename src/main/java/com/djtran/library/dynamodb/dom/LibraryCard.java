@@ -1,10 +1,10 @@
-package dynamodb.dom;
+package com.djtran.library.dynamodb.dom;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverted;
-import dynamodb.converters.AvailabilityStatusConverter;
+import com.djtran.library.dynamodb.converters.AvailabilityStatusConverter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

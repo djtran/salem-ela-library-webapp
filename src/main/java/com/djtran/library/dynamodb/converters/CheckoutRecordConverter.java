@@ -1,9 +1,9 @@
-package dynamodb.converters;
+package com.djtran.library.dynamodb.converters;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dynamodb.dom.CheckoutRecord;
+import com.djtran.library.dynamodb.dom.CheckoutRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

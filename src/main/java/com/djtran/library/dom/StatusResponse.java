@@ -1,4 +1,4 @@
-package dom;
+package com.djtran.library.dom;
 
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +11,6 @@ public class StatusResponse {
     private Code statusCode;
 
     public enum Code {
-        SUCCESS, UNAVAILABLE
+        SUCCESS, UNAVAILABLE, ERROR
     }
 }
