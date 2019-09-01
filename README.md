@@ -7,6 +7,13 @@ I swear some day I'll switched out the commented code in com.djtran.library.Appl
 Java SDK 8
 Maven 3.3.9
 
+# Running with
+IntelliJ IDEA configurations. Equivalents (untested) should be:
+```
+mvn -X -e clean compile package
+mvn exec:java
+```
+
 ## I'm done trying to finagle with the webapp.
 I'll make this into an HTTPS API and then will separate the front end into something like a stupidly simple flask app.
 
