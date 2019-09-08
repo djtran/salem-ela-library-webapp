@@ -1,9 +1,7 @@
 package com.djtran.library.qr;
 
 import com.amazonaws.util.Base64;
-import com.djtran.library.ApiFieldNames;
 import com.djtran.library.dom.Book;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.zxing.*;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
@@ -21,8 +19,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class BookQrTranslater {
 

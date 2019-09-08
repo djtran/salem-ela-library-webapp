@@ -43,8 +43,6 @@ public class HttpApi {
         post("/checkOut", HttpApi::checkOutBookApi);
         post("/addBook", HttpApi::addBookApi);
         post("/checkIn", HttpApi::checkInBookApi);
-        post("/generateQrCodeForBook", HttpApi::generateQrCodeForBook);
-        post("/readQrCode", HttpApi::readQrCode);
     }
 
     private static String addBookApi(Request request, Response response) throws JsonProcessingException {
@@ -53,7 +51,17 @@ public class HttpApi {
         try {
             JsonNode tree = mapper.readTree(request.body());
             Book bookToAdd = mapper.treeToValue(tree.get(ApiFieldNames.BOOK.getFieldName()), Book.class);
-            return mapper.writeValueAsString(manager.addBook(bookToAdd));
+            String encodedImg = translater.generateQrCode(bookToAdd);
+            StatusResponse addBookResponse = manager.addBook(bookToAdd);
+            if (addBookResponse.getStatusCode() == StatusResponse.Code.SUCCESS) {
+                return mapper.writeValueAsString(StatusResponse.builder()
+                        .statusCode(StatusResponse.Code.SUCCESS)
+                        .statusMessage(encodedImg)
+                        .build());
+            } else {
+                return getErrorResponse(
+                        new Exception("Could not add book, check the server logs for more information"));
+            }
         } catch (IOException e) {
             log.error("Could not deserialize book {}, {}", request.body(), e);
             return getErrorResponse(e);
@@ -64,8 +72,12 @@ public class HttpApi {
         log.debug("checkOutBookApi : {}", request.body());
         response.header("Access-Control-Allow-Origin", "*");
         try {
+            Book bookToCheck = readQrCode(request);
+            if (bookToCheck == null) {
+                return getErrorResponse(
+                        new Exception("Could not read Qr Code, check server logs for more information"));
+            }
             JsonNode tree = mapper.readTree(request.body());
-            Book bookToCheck = mapper.treeToValue(tree.get(ApiFieldNames.BOOK.getFieldName()), Book.class);
             Student student = mapper.treeToValue(tree.get(ApiFieldNames.STUDENT.getFieldName()), Student.class);
             return mapper.writeValueAsString(manager.checkoutBook(student, bookToCheck));
         } catch (IOException e) {
@@ -78,8 +90,11 @@ public class HttpApi {
         log.debug("checkInBookApi : {}", request.body());
         response.header("Access-Control-Allow-Origin", "*");
         try {
-            JsonNode tree = mapper.readTree(request.body());
-            Book bookToCheckIn = mapper.treeToValue(tree.get(ApiFieldNames.BOOK.getFieldName()), Book.class);
+            Book bookToCheckIn = readQrCode(request);
+            if (bookToCheckIn == null) {
+                return getErrorResponse(
+                        new Exception("Could not read Qr Code, check server logs for more information"));
+            }
             return mapper.writeValueAsString(manager.checkInBook(bookToCheckIn));
         } catch (IOException e) {
             log.error("Could not deserialize book {}, {}", request.body(), e);
@@ -87,57 +102,25 @@ public class HttpApi {
         }
     }
 
-    private static String generateQrCodeForBook(Request request, Response response) throws JsonProcessingException {
-        log.debug("generateQrCodeForBook : {}", request.body());
-        response.header("Access-Control-Allow-Origin", "*");
-
-        try {
-            JsonNode tree = mapper.readTree(request.body());
-            Book bookToCheckIn = mapper.treeToValue(tree.get(ApiFieldNames.BOOK.getFieldName()), Book.class);
-            String encodedImg = translater.generateQrCode(bookToCheckIn);
-            return mapper.writeValueAsString(StatusResponse.builder()
-                    .statusCode(StatusResponse.Code.SUCCESS)
-                    .statusMessage(encodedImg)
-                    .build());
-        } catch (IOException e) {
-            log.error("generateQrCodeForBook error", e);
-            return getErrorResponse(e);
-        }
-    }
-
-    private static String readQrCode(Request request, Response response) throws JsonProcessingException {
-        log.debug("generateQrCodeForBook : {}", request.body());
-        response.header("Access-Control-Allow-Origin", "*");
-
+    private static Book readQrCode(Request request) {
         try {
             JsonNode tree = mapper.readTree(request.body());
             String encodedImg = tree.get(ApiFieldNames.IMAGE.getFieldName()).asText();
-            log.debug("image source: {}", encodedImg);
             // for now, hardcode removal of the data prefix.
             encodedImg = encodedImg.substring(IMG_PREFIX.length());
-            Book book = translater.readQrCode(encodedImg);
-
-            return mapper.writeValueAsString(StatusResponse.builder()
-                    .statusCode(StatusResponse.Code.SUCCESS)
-                    .statusMessage(book.toString())
-                    .build());
-
+            return translater.readQrCode(encodedImg);
         } catch (IOException e) {
             log.error("Unable to read image from byte array input stream", e);
-
-            return getErrorResponse(e);
+            return null;
         } catch (NotFoundException e) {
             log.error("Unable to decode a result from the BinaryBitmap. Is there a QRCode in the image?", e);
-
-            return getErrorResponse(e);
+            return null;
         } catch (FormatException e) {
             log.error("Not in QR Code format: ", e);
-
-            return getErrorResponse(e);
+            return null;
         } catch (ChecksumException e) {
             log.error("QR checksum invalid", e);
-
-            return getErrorResponse(e);
+            return null;
         }
     }
 
