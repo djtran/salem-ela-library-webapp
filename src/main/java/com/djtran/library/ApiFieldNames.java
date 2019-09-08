@@ -4,7 +4,8 @@ import lombok.Getter;
 
 public enum ApiFieldNames {
     BOOK("Book"),
-    STUDENT("Student");
+    STUDENT("Student"),
+    IMAGE("Image");
 
     @Getter
     private final String fieldName;
