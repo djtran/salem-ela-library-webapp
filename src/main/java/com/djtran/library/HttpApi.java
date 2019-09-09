@@ -18,9 +18,9 @@ import spark.Request;
 import spark.Response;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 
-import static spark.Spark.get;
-import static spark.Spark.post;
+import static spark.Spark.*;
 
 @Singleton
 public class HttpApi {
@@ -31,14 +31,22 @@ public class HttpApi {
     private static ObjectMapper mapper = new ObjectMapper(new JsonFactory());
     private static LibraryManager manager;
     private static BookQrTranslater translater;
+    private final String keystorePath;
+    private final String keystorePassword;
 
     public HttpApi(LibraryManager manager,
-                   BookQrTranslater translater) {
+                   BookQrTranslater translater,
+                   String keystorePath,
+                   String keystorePassword
+                   ) {
         this.manager = manager;
         this.translater = translater;
+        this.keystorePath = keystorePath;
+        this.keystorePassword = keystorePassword;
     }
 
     public void initialize() {
+        secure(keystorePath, keystorePassword, null, null);
         get("/", (request, response) -> "Welcome to the Salem ELA Library API.");
         post("/checkOut", HttpApi::checkOutBookApi);
         post("/addBook", HttpApi::addBookApi);
