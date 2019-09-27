@@ -53,7 +53,7 @@ public class LibraryModule extends AbstractModule {
     HttpApi getSparkApi(LibraryManager manager, BookQrTranslater translater,
                         @Named("keystore.path") String keystorePath,
                         @Named("keystore.password") String keystorePassword) {
-        return new HttpApi(manager, translater, keystorePath, keystorePassword);
+        return new HttpApi(manager, translater);
     }
 
     @Provides
