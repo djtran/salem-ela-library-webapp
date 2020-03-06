@@ -1,4 +1,4 @@
-package com.djtran.library.dom.exceptions;
+package com.djtran.library.restapi.dom.exceptions;
 
 public class InvalidInputException extends Exception {
     public InvalidInputException(String msg) {

@@ -1,10 +1,10 @@
-package com.djtran.library.dynamodb.dom;
+package com.djtran.library.restapi.dom.base;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverted;
-import com.djtran.library.dynamodb.converters.AvailabilityStatusConverter;
+import com.djtran.library.restapi.dom.base.converter.AvailabilityStatusConverter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * Class representing the DynamoDB document. Contents are summation of a Book and all Students who have taken it out.\
- * The tableName in the annotation must match the tableName provided from config.properties.
+ * The tableName in the annotation must match the tableName provided from application.properties.
  */
 @Data
 @Builder
@@ -33,7 +33,7 @@ public class LibraryCard {
 
     @DynamoDBAttribute
 //    @DynamoDBTypeConverted(converter = CheckoutRecordConverter.class)
-    private List<CheckoutRecord> checkoutHistory;
+    private List<LibraryRecord> checkoutHistory;
 
     @DynamoDBAttribute
     @DynamoDBTypeConverted(converter = AvailabilityStatusConverter.class)

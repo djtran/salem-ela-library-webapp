@@ -1,4 +1,4 @@
-package com.djtran.library.dynamodb.dom;
+package com.djtran.library.restapi.dom.base;
 
 public enum AvailabilityStatus {
     AVAILABLE,

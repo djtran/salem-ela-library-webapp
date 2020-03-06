@@ -1,7 +1,7 @@
-package com.djtran.library.qr;
+package com.djtran.library.restapi.qr;
 
 import com.amazonaws.util.Base64;
-import com.djtran.library.dom.Book;
+import com.djtran.library.restapi.dom.base.Book;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.zxing.*;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
@@ -12,6 +12,9 @@ import com.google.zxing.qrcode.QRCodeReader;
 import com.google.zxing.qrcode.QRCodeWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -20,16 +23,19 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+@Component
 public class BookQrTranslater {
 
     private static final Logger log = LoggerFactory.getLogger(BookQrTranslater.class);
     private static final ObjectMapper mapper = new ObjectMapper();
 
     private final int sideLength;
+
     private final QRCodeWriter writer;
     private final QRCodeReader reader;
 
-    public BookQrTranslater(int sideLength,
+    @Autowired
+    public BookQrTranslater(@Value("${qr.side.length}") int sideLength,
                             QRCodeWriter writer,
                             QRCodeReader reader) {
         this.sideLength = sideLength;

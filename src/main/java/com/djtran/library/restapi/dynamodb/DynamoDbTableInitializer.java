@@ -1,22 +1,26 @@
-package com.djtran.library.dynamodb;
+package com.djtran.library.restapi.dynamodb;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.model.*;
-import com.djtran.library.dom.StatusResponse;
+import com.djtran.library.restapi.dom.api.StatusResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 /**
  * Responsible for initializing table if no table already exists.
  */
+@Component
 public class DynamoDbTableInitializer {
     private static final Logger log = LoggerFactory.getLogger(DynamoDbTableInitializer.class);
 
     private final AmazonDynamoDB client;
     private final String tableName;
 
-    public DynamoDbTableInitializer(AmazonDynamoDB client,
-                                    String tableName) {
+    public DynamoDbTableInitializer(@Autowired AmazonDynamoDB client,
+                                    @Value("${dynamodb.tablename}") String tableName) {
 
         this.client = client;
         this.tableName = tableName;
