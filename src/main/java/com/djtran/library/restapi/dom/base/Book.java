@@ -1,4 +1,4 @@
-package com.djtran.library.dom;
+package com.djtran.library.restapi.dom.base;
 
 import lombok.Builder;
 import lombok.Data;

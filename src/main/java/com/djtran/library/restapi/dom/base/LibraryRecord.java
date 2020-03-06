@@ -1,4 +1,4 @@
-package com.djtran.library.dynamodb.dom;
+package com.djtran.library.restapi.dom.base;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBDocument;
@@ -14,7 +14,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @DynamoDBDocument
-public class CheckoutRecord {
+public class LibraryRecord {
     @DynamoDBAttribute
     private String studentId;
 

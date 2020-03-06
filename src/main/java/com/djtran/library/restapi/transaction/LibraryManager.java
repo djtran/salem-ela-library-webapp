@@ -1,12 +1,11 @@
-package com.djtran.library;
+package com.djtran.library.restapi.transaction;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.djtran.library.dom.Book;
-import com.djtran.library.dom.StatusResponse;
-import com.djtran.library.dom.Student;
-import com.djtran.library.dynamodb.dom.*;
+import com.djtran.library.restapi.dom.api.StatusResponse;
+import com.djtran.library.restapi.dom.base.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.Date;
@@ -15,6 +14,7 @@ import java.util.List;
 /**
  * Library CRUD.
  */
+@Component
 public class LibraryManager {
 
     private static final Logger log = LoggerFactory.getLogger(LibraryManager.class);
@@ -28,11 +28,11 @@ public class LibraryManager {
     public StatusResponse checkoutBook(Student s, Book b) {
         log.info("Checkout {} for {}", b, s);
         LibraryCard card = getLibraryCard(b);
-        List<CheckoutRecord> checkoutHistory = card.getCheckoutHistory();
+        List<LibraryRecord> checkoutHistory = card.getCheckoutHistory();
         // Check if already checked out
         if (card.getAvailability() != AvailabilityStatus.AVAILABLE) {
             // Check the book back in.
-            for (CheckoutRecord record : checkoutHistory) {
+            for (LibraryRecord record : checkoutHistory) {
                 if (record.getDateCheckedIn() == null) {
                     record.setDateCheckedIn(new Date());
                 }
@@ -40,7 +40,7 @@ public class LibraryManager {
         }
 
         //Update checkout history
-        checkoutHistory.add(CheckoutRecord.builder()
+        checkoutHistory.add(LibraryRecord.builder()
                 .studentName(s.getName())
                 .studentId(s.getId())
                 .dateCheckedOut(new Date())
@@ -63,7 +63,7 @@ public class LibraryManager {
         LibraryCard card = getLibraryCard(b);
 
         //Log check in time
-        List<CheckoutRecord> history = card.getCheckoutHistory();
+        List<LibraryRecord> history = card.getCheckoutHistory();
         history.get(history.size() - 1).setDateCheckedIn(new Date());
         card.setCheckoutHistory(history);
         log.info("Updated entry: {}", history.get(history.size() - 1));
@@ -90,6 +90,7 @@ public class LibraryManager {
                 .checkoutHistory(Collections.emptyList())
                 .build();
 
+        //Save behavior is create if primary key doesn't exist, update if existing
         checkRecordMapper.save(card);
         return StatusResponse.builder()
                 .statusCode(StatusResponse.Code.SUCCESS)

@@ -1,7 +1,7 @@
-package com.djtran.library.dynamodb.converters;
+package com.djtran.library.restapi.dom.base.converter;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverter;
-import com.djtran.library.dynamodb.dom.AvailabilityStatus;
+import com.djtran.library.restapi.dom.base.AvailabilityStatus;
 
 public class AvailabilityStatusConverter implements DynamoDBTypeConverter<String, AvailabilityStatus> {
     @Override
